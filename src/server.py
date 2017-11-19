@@ -1,6 +1,7 @@
 from flask import Flask, send_from_directory, request, jsonify, url_for
-from calculator import calculate_positions
+from calculator import calculate_positions, render_chart
 import os
+import uuid
 
 app = Flask(__name__)
 
@@ -12,6 +13,10 @@ def main():
     results = None
     try:
         results = calculate_positions(request.data.decode('utf-8').split('\n'))
+        randid = str(uuid.uuid4())
+        render_chart(randid + '.png', results)
+        results["img"] = randid + ".png"
+        print(results)
     except Exception as exception:
         results = {"err": str(exception)}
     return jsonify(results)

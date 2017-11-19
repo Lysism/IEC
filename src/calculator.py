@@ -251,6 +251,43 @@ def calculate_positions(text):
     }
 
 
+def render_chart(filename, data):
+    """
+    Plots the data using matplotlib and outputs the data in a plot
+    Running time: O(n)
+    :param data: The data input generated from calculate_positions()
+    :return: None
+    """
+    import matplotlib.pyplot as plt
+    _, axes = plt.subplots()
+    axes.set_xbound(-1100, 1100)
+    axes.set_ybound(-1100, 1100)
+    plt.grid(True)
+    axes.set_aspect('equal', 'datalim')
+    for sat in data["sats"]:
+        axes.add_artist(plt.Circle(
+            (sat["x"], sat["y"]), sat["v"], edgecolor='blue', alpha=0.1))
+        plt.plot(sat["x"], sat["y"], marker='o', markersize=3, color='black')
+
+    for point in data["all_intersections"]:
+        plt.plot(point["x"], point["y"], marker='o',
+                 markersize=1, color='green')
+
+    for point in data["good_intersections"]:
+        plt.plot(point["x"], point["y"], marker='o',
+                 markersize=3, color='yellow')
+
+    plane = data["plane"]
+    destination = data["dest"]
+
+    plt.plot([plane["x"]], [plane["y"]],
+             marker='o', markersize=5, color='red')
+    plt.plot([destination["x"]], [destination["y"]],
+             marker='o', markersize=5, color='blue')
+    plt.plot([plane["x"], destination["x"]], [plane["y"],
+                                              destination["y"]], color='orange', alpha=0.5)
+    plt.savefig('frontend/' + filename)
+
 def debug_plot(data):
     """
     Plots the data using matplotlib and outputs the data in a plot
