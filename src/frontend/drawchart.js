@@ -30,9 +30,9 @@ function requestData(inputdata) {
         } else {
             // chart.data = loadData(res);
             // chart.update();
-            data = JSON.parse(res)
-            $("#canvas").src = data.img;
-            $("#returnAngle").innerHTML =  data.deg;
+            console.log(res.img)
+            document.getElementById('canvas').src = res.img;
+            document.getElementById("returnAngle").innerHTML = "Angle: " + res.deg;
         }
     });
 }

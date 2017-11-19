@@ -16,7 +16,6 @@ def main():
         randid = str(uuid.uuid4())
         render_chart(randid + '.png', results)
         results["img"] = randid + ".png"
-        print(results)
     except Exception as exception:
         results = {"err": str(exception)}
     return jsonify(results)
