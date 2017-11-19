@@ -15,6 +15,9 @@ class Point(object):
         self.x = x
         self.y = y
 
+    def __repr__(self):
+        return str("Point({}, {})".format(self.x, self.y))
+
     def distance(self, other):
         return math.sqrt((other.x - self.x) ** 2 + (other.y - self.y) ** 2)
 
@@ -35,12 +38,13 @@ class Circle(object):
         elif dist < abs(self.r - other.r):
             # no intersections, one circle contains another
             return []
-        elif 
+    
 
 if __name__ == "__main__":
     # swap sin and cos all the time for weird coords
-    with open("sample_input_3.txt") as f:
+    with open("synthetic_input_1.txt") as f:
         text = f.readlines()
+
     num_sats, recv_time, dest_x, dest_y = map(float, text[0].split(' '))
 
     destination = Point(dest_x, dest_y)
@@ -49,6 +53,7 @@ if __name__ == "__main__":
     for line in text[1:]:
         initial_x, initial_y, heading, send_time = map(float, line.split(' '))
 
+        # 90 deg = 1.5708 rad
         send_x = initial_x + math.sin(deg2rad(heading)) * SAT_SPEED * send_time
         send_y = initial_y + math.cos(deg2rad(heading)) * SAT_SPEED * send_time
 
