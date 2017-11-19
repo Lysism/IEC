@@ -13,9 +13,10 @@ def main():
     results = None
     try:
         results = calculate_positions(request.data.decode('utf-8').split('\n'))
-        randid = str(uuid.uuid4())
-        render_chart(randid + '.png', results)
-        results["img"] = randid + ".png"
+        if not "err" in results:
+            randid = str(uuid.uuid4())
+            render_chart(randid + '.png', results)
+            results["img"] = randid + ".png"
     except Exception as exception:
         results = {"err": str(exception)}
     return jsonify(results)
