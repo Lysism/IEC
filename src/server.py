@@ -8,7 +8,7 @@ app = Flask(__name__)
 def main():
     if request.method == 'GET':
         return send_from_directory('frontend', 'index.html')
-    return jsonify(calculate_positions(request.data.decode('utf-8')))
+    return jsonify(calculate_positions(request.data.decode('utf-8').split('\n')))
 
 @app.route('/<path:file>')
 def send(file):
