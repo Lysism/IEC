@@ -193,7 +193,7 @@ def calculate_positions(text):
     destination = Point(dest_x, dest_y)
 
     sats = []
-    for line in text[1:]:
+    for line in [x for x in text[1:] if x]:
         initial_x, initial_y, heading, send_time = map(float, line.split(' '))
 
         # location of satellite when it sent the signal

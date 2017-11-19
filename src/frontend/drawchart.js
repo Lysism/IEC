@@ -7,6 +7,11 @@ var utils = Samples.utils;
 
 utils.srand(110);
 
+function uploadData() {
+    let x = document.getElementById('inputdata');
+    requestData(x.value);
+}
+
 function loadSample(n) {
     fetch(`/sample_input_${n}.txt`).then(res=>res.text()).then(res => {
         console.log(res)
@@ -16,97 +21,33 @@ function loadSample(n) {
 
 function requestData(inputdata) {
     fetch('/', {
-        data: inputdata
-    }).then(res => {
-        chart.data = loadData(res.body);
-        chart.update();
+        method: 'POST',
+        body: inputdata
+    }).then(res => res.json()).then(res => {
+        console.log(res);
+        if(res.err) {
+            alert("Error: " + res.err)
+        } else {
+            chart.data = loadData(res);
+            chart.update();
+        }
     });
 }
 
 function loadData(json) {
-    var data = JSON.parse(`
-    {
-        "all_intersections": [
-          {
-            "x": 75.001500004091,
-            "y": 75.001500004091,
-            "v": 100
-          },
-          {
-            "x": 349.99849999591,
-            "y": 349.99849999591,
-            "v": 100
-          },
-          {
-            "x": 349.99849999591,
-            "y": 350.00150000409,
-            "v": 100
-          },
-          {
-            "x": 75.001500004091,
-            "y": 624.99849999591,
-            "v": 100
-          }
-        ],
-        "deg": 45.000061388437,
-        "dest": {
-          "v": 100,
-          "x": 1050,
-          "y": 1050
-        },
-        "good_intersections": [
-          {
-            "x": 349.99849999591,
-            "y": 349.99849999591,
-            "v": 100
-          },
-          {
-            "x": 349.99849999591,
-            "y": 350.00150000409,
-            "v": 100
-          }
-        ],
-        "plane": {
-          "v": 100,
-          "x": 349.99849999591,
-          "y": 350
-        },
-        "rad": 0.7853970919671,
-        "sats": [
-          {
-            "x": 75,
-            "y": 350,
-            "v": 274.9985
-          },
-          {
-            "x": 350,
-            "y": 75,
-            "v": 274.9985
-          },
-          {
-            "x": 350,
-            "y": 625,
-            "v": 274.9985
-          }
-        ]
-      }
-    `);
-
-    // Load JSON from
-
     return {
         datasets: [
             {
-                data: [data.plane]
+                data: [json.plane]
             },
             {
-                data: data.sats
+                data: json.sats
             },
             {
-                data: data.all_intersections
+                data: json.all_intersections
             },
             {
-                data: data.good_intersections
+                data: json.good_intersections
             }
         ]
     };
@@ -210,12 +151,8 @@ var options = {
 
 var chart = new Chart("canvas", {
     type: "bubble",
-    data: loadData(),
+    data: {},
     options: options
     });
-
-chart.data = loadData();
-chart.update();
-
 
 
