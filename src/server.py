@@ -4,18 +4,29 @@ import os
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if request.method == 'GET':
         return send_from_directory('frontend', 'index.html')
-    return jsonify(calculate_positions(request.data.decode('utf-8')))
+
+    results = None
+    try:
+        results = calculate_positions(request.data.decode('utf-8').split('\n'))
+    except Exception as exception:
+        results = {"err": str(exception)}
+    return jsonify(results)
+
 
 @app.route('/<path:file>')
 def send(file):
     print(file)
     return send_from_directory('frontend', file)
 
+
 app.config["CACHE_TYPE"] = "null"
+
+
 @app.after_request
 def add_header(response):
     """
@@ -25,6 +36,7 @@ def add_header(response):
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
+
 
 @app.context_processor
 def override_url_for():
@@ -40,6 +52,6 @@ def dated_url_for(endpoint, **values):
         filename = values.get('filename', None)
         if filename:
             file_path = os.path.join(app.root_path,
-                                        endpoint, filename)
+                                     endpoint, filename)
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)

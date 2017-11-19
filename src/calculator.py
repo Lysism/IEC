@@ -1,4 +1,5 @@
 import math
+import time
 from itertools import combinations
 
 SAT_SPEED = 100
@@ -184,7 +185,7 @@ def calculate_positions(text):
     satellite signals. Calculates the bearing for the plane to its destination point.
     Running time: O(n^2)
     :param text: The input values from the text files
-    :return: The final values for all positions (satellites and plane), and the bearing
+    :return: The final values for all positions (satellites, plane, and destination), intersections, and the bearing all in a dictionary
     """
     num_sats, recv_time, dest_x, dest_y = map(float, text[0].split(' '))
     if num_sats < 3:
@@ -251,6 +252,12 @@ def calculate_positions(text):
 
 
 def debug_plot(data):
+    """
+    Plots the data using matplotlib and outputs the data in a plot
+    Running time: O(n)
+    :param data: The data input generated from calculate_positions()
+    :return: None
+    """
     import matplotlib.pyplot as plt
     _, axes = plt.subplots()
     axes.set_xbound(-1100, 1100)
@@ -287,6 +294,10 @@ if __name__ == "__main__":
     with open("sample_input_3.txt") as f:
         LINES = f.readlines()
 
+    start_time = time.clock()
     OUTPUT = calculate_positions(LINES)
+    #Calculate the running time of the program (not including time spent on viewing plot)
+    end_time = time.clock()
+    print ("Running time: " + str(end_time - start_time) + " seconds")
     print(OUTPUT["deg"])
     debug_plot(OUTPUT)
