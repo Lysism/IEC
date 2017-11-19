@@ -19,14 +19,38 @@
 			height: 1000px;
 			color: red;
 		}
+
+        .centre {
+            text-align: center;
+        }
+
+        .large {
+            font-size: 50pt;
+        }
 	</style>
 </head>
 
 <body>
     <div class="container">
         <div class="jumbotron mt-3">
-            <h1>Satellite Naviagation</h1>
-            <p class="lead">GPS stuff</p>
+            <div class="row">
+                <div class="col-md-12 centre">
+                    <span class="large">GPS Triangulation</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Icons made by Freepik from www.flaticon.com is licensed by CC 3.0 BY -->
+                    <img src="satellite.svg" width="70%">
+                </div>
+                <div class="col-md-6 form-group">
+                    <textarea rows=8 class="form-control" name="inputdata">
+                        Hello world
+                    </textarea>
+                    <br>
+                    <a class="btn btn-lg btn-primary" href="#" role="button">Upload Data</a>
+                </div>
+            </div>
             <div class="container">
             	<div class="jumbotron">
             		<canvas id="canvas"></canvas>
@@ -44,9 +68,10 @@
                 <li class="nav-item dropup">
                     <a class="nav-link dropdown-toggle" href="https://getbootstrap.com" id="dropdown10" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sample Inputs</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown10">
-                        <a class="dropdown-item" href="#">Sample 1</a>
-                        <a class="dropdown-item" href="#">Sample 2</a>
-                        <a class="dropdown-item" href="#">Sample 3</a>
+                        <a class="dropdown-item" href="javascript:loadSample(1);">Sample 1</a>
+                        <a class="javascript:loadSample(2);" href="#">Sample 2</a>
+                        <a class="javascript:loadSample(3);" href="#">Sample 3</a>
+                        <a class="javascript:loadSample(4);" href="#">Sample 3</a>
                     </div>
                 </li>
             </ul>

@@ -8,7 +8,7 @@ var utils = Samples.utils;
 utils.srand(110);
 
 function requestData(inputdata) {
-    fetch('/get', {
+    fetch('/', {
         data: inputdata
     }).then(res => {
         chart.data = loadData(res.body);
@@ -197,7 +197,7 @@ var options = {
 };
 
 var chart = new Chart("canvas", {
-    type: "GPS",
+    type: "bubble",
     data: loadData(),
     options: options
     });
