@@ -245,9 +245,9 @@ def calculate_positions(text):
             "y": destination.y,
             "v": 100
         },
-        "sats": [{"x": sat.x, "y": sat.y, "z": sat.r} for sat in sats],
-        "all_intersections": [{"x": point.x, "y": point.y, "z": 100} for point in all_intersections],
-        "good_intersections": [{"x": point.x, "y": point.y, "z": 100} for point in good_intersections]
+        "sats": [{"x": sat.x, "y": sat.y, "v": sat.r} for sat in sats],
+        "all_intersections": [{"x": point.x, "y": point.y, "v": 100} for point in all_intersections],
+        "good_intersections": [{"x": point.x, "y": point.y, "v": 100} for point in good_intersections]
     }
 
 
@@ -266,7 +266,7 @@ def debug_plot(data):
     axes.set_aspect('equal', 'datalim')
     for sat in data["sats"]:
         axes.add_artist(plt.Circle(
-            (sat["x"], sat["y"]), sat["z"], edgecolor='blue', alpha=0.1))
+            (sat["x"], sat["y"]), sat["v"], edgecolor='blue', alpha=0.1))
         plt.plot(sat["x"], sat["y"], marker='o', markersize=3, color='black')
 
     for point in data["all_intersections"]:
@@ -291,7 +291,7 @@ def debug_plot(data):
 
 if __name__ == "__main__":
     # swap sin and cos all the time for weird coords
-    with open("sample_input_3.txt") as f:
+    with open("sample_input_2.txt") as f:
         LINES = f.readlines()
 
     start_time = time.clock()
@@ -299,5 +299,8 @@ if __name__ == "__main__":
     #Calculate the running time of the program (not including time spent on viewing plot)
     end_time = time.clock()
     print ("Running time: " + str(end_time - start_time) + " seconds")
-    print(OUTPUT["deg"])
-    debug_plot(OUTPUT)
+    if "err" in OUTPUT:
+        print("Error: " + OUTPUT["err"])
+    else:
+        print(OUTPUT["deg"])
+        debug_plot(OUTPUT)
