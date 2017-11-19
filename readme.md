@@ -18,7 +18,7 @@ For each signal:
 `-100.0 350.0 90.0 1.75`
 
 * x, y = -100.0, 350.0
-* D = 90.0 (compass heading [0-360 degrees, 90 is North])
+* D = 90.0 (compass heading [0-360 degrees, 0 is North, 270 is West, 180 is South, 90 is East])
 * time = 1.75 (time that this signal was encoded)
 
 Output:
