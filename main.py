@@ -7,14 +7,32 @@ EPSILON = 0.1
 
 
 def deg2rad(deg):
+    """
+    A function to convert degrees into radians
+    Running time: O(1)
+    :param deg: The value to convert
+    :return: The converted value
+    """
     return deg * math.pi / 180
 
 
 def rad2deg(rad):
+    """
+    A function to convert radians into degrees
+    Running time: O(1)
+    :param rad: The value to convert
+    :return: The converted value
+    """
     return rad * 180 / math.pi
 
 
 def flip_rad(rad):
+    """
+    Flips the x and y coordinates using cosine and sine functions
+    Running time: O(1)
+    :param rad: The radians value to use with consine and sine functions
+    :return: The arctan value of x and y
+    """
     x = math.cos(rad)
     y = math.sin(rad)
     # Pass the coordinates backwards into atan2
@@ -23,10 +41,22 @@ def flip_rad(rad):
 
 
 def flip_deg(deg):
+    """
+    Flips the degree values
+    Running time: O(1)
+    :param deg: The degree value to flip using function calls
+    :return: The flipped value
+    """
     return rad2deg(flip_rad(deg2rad(deg)))
 
 
 def normalize_deg(deg):
+    """
+    Normalizes angle orientations for the given degree value
+    Running time: O(1)
+    :param deg: The value to normalize
+    :return: The normalized value
+    """
     while deg < 0:
         deg += 360
     while deg > 360:
@@ -36,40 +66,91 @@ def normalize_deg(deg):
 
 class Point(object):
     def __init__(self, x, y):
+        """
+        Constructor for the Point class
+        Running time: O(1)
+        :param x: The x coordinate value
+        :param y: The y coordinate value
+        """
         self.x = x
         self.y = y
 
     @staticmethod
     def average(points):
+        """
+        Averages the x and y coordinate values from all given points
+        Running time: O(1)
+        :return: The average x value and average y value
+        """
         avg_x = sum(point.x for point in points) / len(points)
         avg_y = sum(point.y for point in points) / len(points)
         return Point(avg_x, avg_y)
 
     def __repr__(self):
+        """
+        Returns a string representation of a Point object
+        Running time: O(1)
+        :return: String containing the point's coordinates formatted
+        """
         return str("Point({}, {})".format(self.x, self.y))
 
     def distance(self, other):
+        """
+        Calculates Euclidean distance between two given points
+        Running time: O(1)
+        :param other: The second point to calculate distance with the first point
+        :return: The distance value calculated
+        """
         return math.sqrt((other.x - self.x) ** 2 + (other.y - self.y) ** 2)
 
     def __str__(self):
+        """
+        Returns a formatted string with the coordinates
+        Running time: O(1)
+        :return: The formatted string
+        """
         return "{}, {}".format(self.x, self.y)
 
 
 class Circle(object):
     def __init__(self, x, y, r):
+        """
+        Constructor for the Circle class
+        Running time: O(1)
+        :param x: The x coordinate value
+        :param y: The y coordinate value
+        :param r: The radius value
+        """
         self.x = x
         self.y = y
         self.r = r
 
     def __str__(self):
+        """
+        Returns a string representation of the object
+        Running time: O(1)
+        :return: Formatted string with the object's parameters
+        """
         return "x:{}, y:{}, r:{}".format(self.x, self.y, self.r)
 
     def distance(self, other):
+        """
+        Calculates Euclidean between the two given points
+        Running time: O(1)
+        :param other: The second point to use in calculations with the first point
+        :return: The calculated distance value
+        """
         return math.sqrt((other.x - self.x) ** 2 + (other.y - self.y) ** 2)
 
     # algorithm for circle intersections
     # modified from http://paulbourke.net/geometry/circlesphere/circle_intersection.py
     def intersect(self, other):
+        """
+        Check for intersections with signal circles radiating from satellite points
+        Running time: O(1)
+        :param other: The second satellite point
+        :return: The intersection points of the two circles
+        """
         dist = self.distance(other)
         dx = other.x - self.x
         dy = other.y - self.y
@@ -97,6 +178,14 @@ class Circle(object):
 
 
 def calculate_positions(text):
+    """
+    Calculates the positions of the satellites moving from the given time and coordinates
+    Calculates the location of the plane from the best intersection point of the
+    satellite signals. Calculates the bearing for the plane to its destination point.
+    Running time: O(n^2)
+    :param text: The input values from the text files
+    :return: The final values for all positions (satellites and plane), and the bearing
+    """
     num_sats, recv_time, dest_x, dest_y = map(float, text[0].split(' '))
     if num_sats < 3:
         return {"err": "Inconclusive"}
