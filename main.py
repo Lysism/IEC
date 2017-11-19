@@ -1,29 +1,30 @@
 import math
-import matplotlib.pyplot as plt
 from itertools import combinations
 
 SAT_SPEED = 100
 SPEED_OF_WAVE = 350
 EPSILON = 0.1
 
-def inconclusive():
-    print("Inconclusive")
-    exit(1)
 
 def deg2rad(deg):
     return deg * math.pi / 180
 
+
 def rad2deg(rad):
     return rad * 180 / math.pi
+
 
 def flip_rad(rad):
     x = math.cos(rad)
     y = math.sin(rad)
-    #flip coords
+    # Pass the coordinates backwards into atan2
+    # so we swap X and Y
     return math.atan2(x, y)
+
 
 def flip_deg(deg):
     return rad2deg(flip_rad(deg2rad(deg)))
+
 
 def normalize_deg(deg):
     while deg < 0:
@@ -31,11 +32,14 @@ def normalize_deg(deg):
     while deg > 360:
         deg -= 360
     return deg
+
+
 class Point(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-    
+
+    @staticmethod
     def average(points):
         avg_x = sum(point.x for point in points) / len(points)
         avg_y = sum(point.y for point in points) / len(points)
@@ -66,47 +70,36 @@ class Circle(object):
     # algorithm for circle intersections
     # modified from http://paulbourke.net/geometry/circlesphere/circle_intersection.py
     def intersect(self, other):
-        PREC = 2
-        dist = round(self.distance(other), PREC)
+        dist = self.distance(other)
         dx = other.x - self.x
         dy = other.y - self.y
         if dist > (self.r + other.r):
             # no intersections, circles are too far apart
             return []
-        elif dist < abs(self.r - other.r):
+        if dist < abs(self.r - other.r):
             # no intersections, one circle contains another
             return []
 
-        elif dist == 0 and self.r == other.r:
+        if dist == 0 and self.r == other.r:
             # circles are the same, infinite solutions
             return []
-        else:
-            chord_dist = (self.r ** 2 - other.r ** 2 + dist ** 2) / (2 * dist)
-            half_chord = math.sqrt(self.r ** 2 - chord_dist ** 2)
+        chord_dist = (self.r ** 2 - other.r ** 2 + dist ** 2) / (2 * dist)
+        half_chord = math.sqrt(self.r ** 2 - chord_dist ** 2)
 
-            chord_mid_x = self.x + (chord_dist * dx) / dist
-            chord_mid_y = self.y + (chord_dist * dy) / dist
+        chord_mid_x = self.x + (chord_dist * dx) / dist
+        chord_mid_y = self.y + (chord_dist * dy) / dist
 
-            int_1_x = round(chord_mid_x + (half_chord * dy) / dist, PREC)
-            int_1_y = round(chord_mid_y - (half_chord * dx) / dist, PREC)
-            int_2_x = round(chord_mid_x - (half_chord * dy) / dist, PREC)
-            int_2_y = round(chord_mid_y + (half_chord * dx) / dist, PREC)
-            return [Point(int_1_x, int_1_y), Point(int_2_x, int_2_y)]
+        int_1_x = chord_mid_x + (half_chord * dy) / dist
+        int_1_y = chord_mid_y - (half_chord * dx) / dist
+        int_2_x = chord_mid_x - (half_chord * dy) / dist
+        int_2_y = chord_mid_y + (half_chord * dx) / dist
+        return [Point(int_1_x, int_1_y), Point(int_2_x, int_2_y)]
 
 
-if __name__ == "__main__":
-    fig, ax = plt.subplots() # note we must use plt.subplots, not plt.subplot
-    ax.set_xbound(-1100, 1100)
-    ax.set_ybound(-1100, 1100)
-    plt.grid(True)
-    ax.set_aspect('equal', 'datalim')
-    # swap sin and cos all the time for weird coords
-    with open("synthetic_input_1.txt") as f:
-        text = f.readlines()
-
+def calculate_positions(text):
     num_sats, recv_time, dest_x, dest_y = map(float, text[0].split(' '))
     if num_sats < 3:
-        inconclusive()
+        return {"err": "Inconclusive"}
     destination = Point(dest_x, dest_y)
 
     sats = []
@@ -114,52 +107,97 @@ if __name__ == "__main__":
         initial_x, initial_y, heading, send_time = map(float, line.split(' '))
 
         # location of satellite when it sent the signal
-
         send_x = initial_x + math.sin(deg2rad(heading)) * SAT_SPEED * send_time
         send_y = initial_y + math.cos(deg2rad(heading)) * SAT_SPEED * send_time
-
-        sat_pos = Point(send_x, send_y)
 
         plane_distance_from_sat = (recv_time - send_time) * SPEED_OF_WAVE
 
         sats.append(Circle(send_x, send_y, plane_distance_from_sat))
 
-        ax.add_artist(plt.Circle((send_x, send_y), plane_distance_from_sat, edgecolor='blue', alpha=0.1))
-        plt.plot([send_x], [send_y], marker='o', markersize=3, color='black')
     all_intersections = []
-    for a,b in combinations(sats, 2):
+    for a, b in combinations(sats, 2):
         all_intersections.extend(a.intersect(b))
-    
+
     ranked_intersections = []
     for point in all_intersections:
-        plt.plot(point.x, point.y, marker='o', markersize=2, color='green')            
         count = 0
         for other in all_intersections:
             if point.distance(other) < EPSILON:
                 count += 1
         ranked_intersections.append((count, point))
-
-    ## sort by number of nearby intersections, ranked high -> low
-    sorted_ranks = sorted(ranked_intersections, key=lambda x: x[0], reverse=True)
+    # sort by number of nearby intersections, ranked high -> low
+    sorted_ranks = sorted(ranked_intersections,
+                          key=lambda x: x[0], reverse=True)
     max_intersections = sorted_ranks[0][0]
-    good_intersections = [tup[1] for tup in sorted_ranks if tup[0] == max_intersections]
-    
-    ## make sure data is consistant and interseactions are nearby
+    good_intersections = [tup[1]
+                          for tup in sorted_ranks if tup[0] == max_intersections]
+
+    # make sure data is consistant and interseactions are nearby
     for a, b in combinations(good_intersections, 2):
         if a.distance(b) > EPSILON:
-            print("Inconsistent")
-            exit(1)
+            return {"error": "Inconsistent"}
+
     airplane = Point.average(good_intersections)
     dx = destination.x - airplane.x
     dy = destination.y - airplane.y
     rad_to_plane = math.atan2(dy, dx)
-    print(normalize_deg(rad2deg(flip_rad(rad_to_plane))))
-    plt.plot([airplane.x], [airplane.y], marker='o', markersize=5, color='red')    
-    plt.plot([destination.x], [destination.y], marker='o', markersize=5, color='blue')    
-    print(str(airplane))
-    plt.plot([airplane.x, destination.x], [airplane.y, destination.y], color='orange', alpha=0.5)    
-    Ad = airplane.distance(destination)
-    Ax = [airplane.x, airplane.x+Ad*math.cos(rad_to_plane)]
-    Ay = [airplane.y, airplane.y+Ad*math.sin(rad_to_plane)]
-    plt.plot(Ax, Ay, '-')
+    deg_to_plane = normalize_deg(rad2deg(flip_rad(rad_to_plane)))
+    return {
+        "deg": deg_to_plane,
+        "rad": rad_to_plane,
+        "plane": {
+            "x": airplane.x,
+            "y": airplane.y,
+            "v": 100
+        },
+        "dest": {
+            "x": destination.x,
+            "y": destination.y,
+            "v": 100
+        },
+        "sats": [{"x": sat.x, "y": sat.y, "z": sat.r} for sat in sats],
+        "all_intersections": [{"x": point.x, "y": point.y, "z": 100} for point in all_intersections],
+        "good_intersections": [{"x": point.x, "y": point.y, "z": 100} for point in good_intersections]
+    }
+
+
+def debug_plot(data):
+    import matplotlib.pyplot as plt
+    _, axes = plt.subplots()
+    axes.set_xbound(-1100, 1100)
+    axes.set_ybound(-1100, 1100)
+    plt.grid(True)
+    axes.set_aspect('equal', 'datalim')
+    for sat in data["sats"]:
+        axes.add_artist(plt.Circle(
+            (sat["x"], sat["y"]), sat["z"], edgecolor='blue', alpha=0.1))
+        plt.plot(sat["x"], sat["y"], marker='o', markersize=3, color='black')
+
+    for point in data["all_intersections"]:
+        plt.plot(point["x"], point["y"], marker='o',
+                 markersize=1, color='green')
+
+    for point in data["good_intersections"]:
+        plt.plot(point["x"], point["y"], marker='o',
+                 markersize=3, color='yellow')
+
+    plane = data["plane"]
+    destination = data["dest"]
+
+    plt.plot([plane["x"]], [plane["y"]],
+             marker='o', markersize=5, color='red')
+    plt.plot([destination["x"]], [destination["y"]],
+             marker='o', markersize=5, color='blue')
+    plt.plot([plane["x"], destination["x"]], [plane["y"],
+                                              destination["y"]], color='orange', alpha=0.5)
     plt.show()
+
+
+if __name__ == "__main__":
+    # swap sin and cos all the time for weird coords
+    with open("sample_input_3.txt") as f:
+        LINES = f.readlines()
+
+    OUTPUT = calculate_positions(LINES)
+    print(OUTPUT["deg"])
+    debug_plot(OUTPUT)
