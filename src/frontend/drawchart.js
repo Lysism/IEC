@@ -25,8 +25,12 @@ function requestData(inputdata) {
         body: inputdata
     }).then(res => res.json()).then(res => {
         console.log(res);
-        chart.data = loadData(res);
-        chart.update();
+        if(res.err) {
+            alert("Error: " + res.err)
+        } else {
+            chart.data = loadData(res);
+            chart.update();
+        }
     });
 }
 
