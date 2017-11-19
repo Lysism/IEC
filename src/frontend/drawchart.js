@@ -28,8 +28,11 @@ function requestData(inputdata) {
         if(res.err) {
             alert("Error: " + res.err)
         } else {
-            chart.data = loadData(res);
-            chart.update();
+            // chart.data = loadData(res);
+            // chart.update();
+            data = JSON.parse(res)
+            $("#canvas").src = data.img;
+            $("#returnAngle").innerHTML =  data.deg;
         }
     });
 }
