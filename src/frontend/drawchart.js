@@ -7,6 +7,13 @@ var utils = Samples.utils;
 
 utils.srand(110);
 
+function loadSample(n) {
+    fetch(`/sample_input_${n}.txt`).then(res=>res.text()).then(res => {
+        console.log(res)
+        $('textarea[name="inputdata"]').val(res);
+    })
+}
+
 function requestData(inputdata) {
     fetch('/', {
         data: inputdata
@@ -23,22 +30,22 @@ function loadData(json) {
           {
             "x": 75.001500004091,
             "y": 75.001500004091,
-            "z": 100
+            "v": 100
           },
           {
             "x": 349.99849999591,
             "y": 349.99849999591,
-            "z": 100
+            "v": 100
           },
           {
             "x": 349.99849999591,
             "y": 350.00150000409,
-            "z": 100
+            "v": 100
           },
           {
             "x": 75.001500004091,
             "y": 624.99849999591,
-            "z": 100
+            "v": 100
           }
         ],
         "deg": 45.000061388437,
@@ -51,12 +58,12 @@ function loadData(json) {
           {
             "x": 349.99849999591,
             "y": 349.99849999591,
-            "z": 100
+            "v": 100
           },
           {
             "x": 349.99849999591,
             "y": 350.00150000409,
-            "z": 100
+            "v": 100
           }
         ],
         "plane": {
@@ -69,17 +76,17 @@ function loadData(json) {
           {
             "x": 75,
             "y": 350,
-            "z": 274.9985
+            "v": 274.9985
           },
           {
             "x": 350,
             "y": 75,
-            "z": 274.9985
+            "v": 274.9985
           },
           {
             "x": 350,
             "y": 625,
-            "z": 274.9985
+            "v": 274.9985
           }
         ]
       }
@@ -90,7 +97,7 @@ function loadData(json) {
     return {
         datasets: [
             {
-                data: data.plane
+                data: [data.plane]
             },
             {
                 data: data.sats
