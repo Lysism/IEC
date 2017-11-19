@@ -291,7 +291,7 @@ def debug_plot(data):
 
 if __name__ == "__main__":
     # swap sin and cos all the time for weird coords
-    with open("sample_input_1.txt") as f:
+    with open("sample_input_2.txt") as f:
         LINES = f.readlines()
 
     start_time = time.clock()
