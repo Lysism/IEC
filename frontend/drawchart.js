@@ -2,95 +2,117 @@ var DATA_COUNT = 16;
 var MIN_XY = -150;
 var MAX_XY = 100;
 
-var presets = window.chartColors;
+// var presets = window.chartColors;
 var utils = Samples.utils;
 
 utils.srand(110);
 
-function colorize(opaque, context) {
-    var value = context.dataset.data[context.dataIndex];
-    var x = value.x / 100;
-    var y = value.y / 100;
-    var r = x < 0 && y < 0 ? 250 : x < 0 ? 150 : y < 0 ? 50 : 0;
-    var g = x < 0 && y < 0 ? 0 : x < 0 ? 50 : y < 0 ? 150 : 250;
-    var b = x < 0 && y < 0 ? 0 : x > 0 && y > 0 ? 250 : 150;
-    var a = opaque ? 1 : 0.5 * value.v / 1000;
-
-    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+function requestData(inputdata) {
+    fetch('/get', {
+        data: inputdata
+    }).then(res => {
+        chart.data = loadData(res.body);
+        chart.update();
+    });
 }
 
-function generateData() {
-    var data = [];
-    var i;
-
-    for (i = 0; i < DATA_COUNT; ++i) {
-        data.push({
-            x: utils.rand(MIN_XY, MAX_XY),
-            y: utils.rand(MIN_XY, MAX_XY),
-            v: utils.rand(100, 1000)
-        });
-    }
-
-    return data;
-}
-
-data = JSON.parse(`
+function loadData(json) {
+    var data = JSON.parse(`
     {
         "plane": [
             {
                 "x": 100,
-                "y": 200,
+                "y": 10,
                 "v": 100
             }
         ],
         "sats": [
             {
-                "x": 100,
-                "y": 200,
-                "v": 800
+                "x": 400,
+                "y": 100,
+                "v": 100
             },
             {
-                "x": -100,
-                "y": 300,
-                "v": 540
+                "x": 800,
+                "y": 100,
+                "v": 100
             },
             {
-                "x": 500,
-                "y": 80,
-                "v": 500
+                "x": 1200,
+                "y": 100,
+                "v": 100
             }
         ],
-        "intersections": [
+        "all_intersections": [
             {
-                "x": 80,
-                "y": 20,
+                "x": 0,
+                "y": 200,
+                "v": 30
+            },
+            {
+                "x": 100,
+                "y": 200,
                 "v": 100
             },
             {
-                "x": -100,
-                "y": 320,
+                "x": 200,
+                "y": 200,
+                "v": 100
+            }
+        ],
+        "good_intersections": [
+            {
+                "x": 0,
+                "y": 300,
                 "v": 100
             },
             {
-                "x": 500,
-                "y": 80,
+                "x": 100,
+                "y": 300,
+                "v": 100
+            },
+            {
+                "x": 200,
+                "y": 300,
                 "v": 100
             }
         ]
     }
+    `);
 
-    `)
+    // Load JSON from
 
-var data = {
-    datasets: [{
-        data: data.plane
-    }, {
-        data: data.sats
-    }, {
-        data: data.intersections
-    }]
-};
+    return {
+        datasets: [
+            {
+                data: data.plane
+            },
+            {
+                data: data.sats
+            },
+            {
+                data: data.all_intersections
+            },
+            {
+                data: data.good_intersections
+            }
+        ]
+    };
+}
 
+Chart.defaults.derivedBubble = Chart.defaults.bubble;
+Chart.controllers.GPS = Chart.controllers.bubble.extend({
+    name: "GPS",
+    draw: function () {
+        Chart.controllers.bubble.prototype.draw.call(this, ease);
+        var line = [0, 0, 100, 100];
+        this.chart.ctx.beginPath();
+        this.chart.ctx.moveTo(line[0], line[1])
+        this.strokeStyle = '#000';
+        this.chart.ctx.lineTo(line[2], line[3]);
+        this.chart.ctx.stroke();
+    }
+})
 
 var options = {
     aspectRatio: 1,
@@ -100,18 +122,18 @@ var options = {
     elements: {
         point: {
             backgroundColor: function(context) {
-                context.datasetIndex == 0 ? '#FFFFFF' : '#ABCABC'
+                return utils.color(context.datasetIndex);
             },
 
             borderColor: function(context) {
-                context.datasetIndex == 0 ? '#FFFFFF' : '#ABCABC'
+                return utils.color(context.datasetIndex);
             },
 
             borderWidth: function(context) {
                 return Math.min(Math.max(1, context.datasetIndex + 1), 8);
             },
 
-            hoverBackgroundColor: 'transparent',
+            hoverBackgroundColor: "transparent",
 
             hoverBorderColor: function(context) {
                 return utils.color(context.datasetIndex);
@@ -126,7 +148,7 @@ var options = {
                 var value = context.dataset.data[context.dataIndex];
                 var size = context.chart.width;
                 var base = Math.abs(value.v) / 1000;
-                return (size / 24) * base;
+                return size / 24 * base;
             }
         }
     },
@@ -135,9 +157,9 @@ var options = {
         // Boolean to enable panning
         enabled: false,
 
-        // Panning directions. Remove the appropriate direction to disable 
+        // Panning directions. Remove the appropriate direction to disable
         // Eg. 'y' would only allow panning in the y direction
-        mode: 'xy',
+        mode: "xy",
         rangeMin: {
             // Format of min pan range depends on scale type
             x: null,
@@ -158,9 +180,9 @@ var options = {
         // Enable drag-to-zoom behavior
         drag: false,
 
-        // Zooming directions. Remove the appropriate direction to disable 
+        // Zooming directions. Remove the appropriate direction to disable
         // Eg. 'y' would only allow zooming in the y direction
-        mode: 'xy',
+        mode: "xy",
         rangeMin: {
             // Format of min zoom range depends on scale type
             x: null,
@@ -174,27 +196,14 @@ var options = {
     }
 };
 
-var chart = new Chart('canvas', {
-    type: 'bubble',
-    data: data,
+var chart = new Chart("canvas", {
+    type: "GPS",
+    data: loadData(),
     options: options
-});
-
-function randomize() {
-    chart.data.datasets.forEach(function(dataset) {
-        dataset.data = generateData()
     });
-    chart.update();
-}
 
-function addDataset() {
-    chart.data.datasets.push({
-        data: generateData()
-    });
-    chart.update();
-}
+chart.data = loadData();
+chart.update();
 
-function removeDataset() {
-    chart.data.datasets.shift();
-    chart.update();
-}
+
+
