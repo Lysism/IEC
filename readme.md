@@ -20,3 +20,7 @@ For each signal:
 * x, y = -100.0, 350.0
 * D = 90.0 (compass heading [0-360 degrees, 90 is North])
 * time = 1.75 (time that this signal was encoded)
+
+Output:
+
+`45 degrees`
