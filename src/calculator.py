@@ -291,7 +291,7 @@ def debug_plot(data):
 
 if __name__ == "__main__":
     # swap sin and cos all the time for weird coords
-    with open("sample_input_3.txt") as f:
+    with open("sample_input_1.txt") as f:
         LINES = f.readlines()
 
     start_time = time.clock()
@@ -299,5 +299,8 @@ if __name__ == "__main__":
     #Calculate the running time of the program (not including time spent on viewing plot)
     end_time = time.clock()
     print ("Running time: " + str(end_time - start_time) + " seconds")
-    print(OUTPUT["deg"])
-    debug_plot(OUTPUT)
+    if "err" in OUTPUT:
+        print("Error: " + OUTPUT["err"])
+    else:
+        print(OUTPUT["deg"])
+        debug_plot(OUTPUT)
