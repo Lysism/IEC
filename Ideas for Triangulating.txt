@@ -1,3 +1,5 @@
+All signals are received from GPS at the same time.
+
 Find intersections between circles formed by two points.
 Save these intersections in Point class
 
