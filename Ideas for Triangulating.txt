@@ -1,0 +1,8 @@
+Find intersections between circles formed by two points.
+Save these intersections in Point class
+
+Use pythagorean theorem to find distance between two points.
+If distance is less than 0.1, average the two points. 
+If less than 3 points are within 0.1 m distance, ignore the intersections.
+
+Create method that returns position of satelite as function of time.
