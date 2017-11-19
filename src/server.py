@@ -1,4 +1,5 @@
 from flask import Flask, send_from_directory, request, jsonify, url_for
+from calculator import calculate_positions
 import os
 
 app = Flask(__name__)
@@ -7,7 +8,7 @@ app = Flask(__name__)
 def main():
     if request.method == 'GET':
         return send_from_directory('frontend', 'index.html')
-    return jsonify({"hello": "world"})
+    return jsonify(calculate_positions(request.data.decode('utf-8')))
 
 @app.route('/<path:file>')
 def send(file):
