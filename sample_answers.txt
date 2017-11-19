@@ -1,4 +1,4 @@
 input_1: 45 degrees
 input_2: Inconclusive
-input_3: 291.0859 degrees
+input_3: 338.9140365 degrees
 input_4: 225 degrees
