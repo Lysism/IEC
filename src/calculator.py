@@ -291,10 +291,10 @@ def debug_plot(data):
 
 if __name__ == "__main__":
     # swap sin and cos all the time for weird coords
-    start_time = time.clock()
     with open("sample_input_3.txt") as f:
         LINES = f.readlines()
 
+    start_time = time.clock()
     OUTPUT = calculate_positions(LINES)
     #Calculate the running time of the program (not including time spent on viewing plot)
     end_time = time.clock()
