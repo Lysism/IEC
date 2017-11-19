@@ -97,16 +97,16 @@ function loadData(json) {
     return {
         datasets: [
             {
-                data: [data.plane]
+                data: []//[data.plane]
             },
             {
                 data: data.sats
             },
             {
-                data: data.all_intersections
+                data: []//data.all_intersections
             },
             {
-                data: data.good_intersections
+                data: [] //data.good_intersections
             }
         ]
     };
@@ -130,11 +130,12 @@ var options = {
     aspectRatio: 1,
     legend: false,
     tooltips: false,
+    responsive: true,
 
     elements: {
         point: {
             backgroundColor: function(context) {
-                return utils.color(context.datasetIndex);
+                return 'transparent'; //utils.color(context.datasetIndex);
             },
 
             borderColor: function(context) {
@@ -159,8 +160,9 @@ var options = {
             radius: function(context) {
                 var value = context.dataset.data[context.dataIndex];
                 var size = context.chart.width;
-                var base = Math.abs(value.v) / 1000;
-                return size / 24 * base;
+                // var base = Math.abs(value.v) / 30;
+                // return size / 20 * base;
+                return 200;
             }
         }
     },
