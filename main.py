@@ -1,10 +1,13 @@
 import math
-import matplotlib.pyplot as plt
 from itertools import combinations
 
+DEBUG = False
 SAT_SPEED = 100
 SPEED_OF_WAVE = 350
 EPSILON = 0.1
+
+if DEBUG:
+    import matplotlib.pyplot as plt
 
 def inconclusive():
     print("Inconclusive")
@@ -95,13 +98,14 @@ class Circle(object):
 
 
 if __name__ == "__main__":
-    fig, ax = plt.subplots() # note we must use plt.subplots, not plt.subplot
-    ax.set_xbound(-1100, 1100)
-    ax.set_ybound(-1100, 1100)
-    plt.grid(True)
-    ax.set_aspect('equal', 'datalim')
+    if DEBUG:
+        fig, ax = plt.subplots() # note we must use plt.subplots, not plt.subplot
+        ax.set_xbound(-1100, 1100)
+        ax.set_ybound(-1100, 1100)
+        plt.grid(True)
+        ax.set_aspect('equal', 'datalim')
     # swap sin and cos all the time for weird coords
-    with open("synthetic_input_1.txt") as f:
+    with open("sample_input_3.txt") as f:
         text = f.readlines()
 
     num_sats, recv_time, dest_x, dest_y = map(float, text[0].split(' '))
@@ -124,20 +128,23 @@ if __name__ == "__main__":
 
         sats.append(Circle(send_x, send_y, plane_distance_from_sat))
 
-        ax.add_artist(plt.Circle((send_x, send_y), plane_distance_from_sat, edgecolor='blue', alpha=0.1))
-        plt.plot([send_x], [send_y], marker='o', markersize=3, color='black')
+        if DEBUG:
+            ax.add_artist(plt.Circle((send_x, send_y), plane_distance_from_sat, edgecolor='blue', alpha=0.1))
+            plt.plot([send_x], [send_y], marker='o', markersize=3, color='black')
+
     all_intersections = []
     for a,b in combinations(sats, 2):
         all_intersections.extend(a.intersect(b))
     
     ranked_intersections = []
     for point in all_intersections:
-        plt.plot(point.x, point.y, marker='o', markersize=2, color='green')            
         count = 0
         for other in all_intersections:
             if point.distance(other) < EPSILON:
                 count += 1
         ranked_intersections.append((count, point))
+        if DEBUG:
+            plt.plot(point.x, point.y, marker='o', markersize=2, color='green')
 
     ## sort by number of nearby intersections, ranked high -> low
     sorted_ranks = sorted(ranked_intersections, key=lambda x: x[0], reverse=True)
@@ -154,12 +161,12 @@ if __name__ == "__main__":
     dy = destination.y - airplane.y
     rad_to_plane = math.atan2(dy, dx)
     print(normalize_deg(rad2deg(flip_rad(rad_to_plane))))
-    plt.plot([airplane.x], [airplane.y], marker='o', markersize=5, color='red')    
-    plt.plot([destination.x], [destination.y], marker='o', markersize=5, color='blue')    
-    print(str(airplane))
-    plt.plot([airplane.x, destination.x], [airplane.y, destination.y], color='orange', alpha=0.5)    
-    Ad = airplane.distance(destination)
-    Ax = [airplane.x, airplane.x+Ad*math.cos(rad_to_plane)]
-    Ay = [airplane.y, airplane.y+Ad*math.sin(rad_to_plane)]
-    plt.plot(Ax, Ay, '-')
-    plt.show()
+    if DEBUG:
+        plt.plot([airplane.x], [airplane.y], marker='o', markersize=5, color='red')    
+        plt.plot([destination.x], [destination.y], marker='o', markersize=5, color='blue')    
+        plt.plot([airplane.x, destination.x], [airplane.y, destination.y], color='orange', alpha=0.5)    
+        Ad = airplane.distance(destination)
+        Ax = [airplane.x, airplane.x+Ad*math.cos(rad_to_plane)]
+        Ay = [airplane.y, airplane.y+Ad*math.sin(rad_to_plane)]
+        plt.plot(Ax, Ay, '-')
+        plt.show()
